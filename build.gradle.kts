@@ -43,9 +43,9 @@ dependencies {
     //database dependencies
     implementation("com.zaxxer:HikariCP:5.0.0")
     implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
-    implementation("org.jetbrains.exposed:exposed-core:0.36.1")
-    implementation("org.jetbrains.exposed:exposed-dao:0.36.1")
-    implementation("org.jetbrains.exposed:exposed-jdbc:0.36.1")
+    implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.2.0")
 
     implementation("org.mindrot:jbcrypt:0.4")

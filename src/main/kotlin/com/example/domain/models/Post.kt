@@ -29,5 +29,5 @@ object Posts: UUIDTable() {
     val comment = varchar("comment", 151)
     val createdAt = long("createdAt").default(System.currentTimeMillis())
 
-    val userId = reference("id", Users.id, onDelete = ReferenceOption.CASCADE)
+    val userId = reference("user_id", Users.id, onDelete = ReferenceOption.CASCADE)
 }

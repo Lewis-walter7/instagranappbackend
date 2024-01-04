@@ -24,5 +24,5 @@ object Messages: UUIDTable() {
     val postUrl = varchar("postUrl",512)
     val createdAt = long("created_at")
 
-    val userId = reference("id", Users.id, onDelete = ReferenceOption.CASCADE)
+    val userId = reference("user_id", Users.id, onDelete = ReferenceOption.CASCADE)
 }

@@ -19,6 +19,6 @@ object Comments: Table(){
     val created_at = long("created_at").default(System.currentTimeMillis())
 
     //one-many relationship with the user
-    val userId = reference("id", Users.id, onDelete = ReferenceOption.CASCADE)
-    val postId = reference("id", Posts.id, onDelete = ReferenceOption.CASCADE)
+    val userId = reference("user_id", Users.id, onDelete = ReferenceOption.CASCADE)
+    val postId = reference("post_id", Posts.id, onDelete = ReferenceOption.CASCADE)
 }
