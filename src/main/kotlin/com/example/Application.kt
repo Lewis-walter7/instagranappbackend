@@ -1,6 +1,8 @@
 package com.example
 
-import com.example.data.services.UserService
+import com.example.data.databaseopertaions.PostService
+import com.example.data.databaseopertaions.UserService
+import com.example.domain.dao.user.PostDaoImpl
 import com.example.domain.dao.user.UserDaoImpl
 import com.example.plugins.*
 import io.ktor.server.application.*
@@ -12,7 +14,9 @@ fun main(args: Array<String>) {
 fun Application.module() {
 
     val userRepository = UserDaoImpl()
+    val postRepostory = PostDaoImpl()
     val userService = UserService(userRepository)
+    val postService = PostService(postRepostory)
 
     DatabaseFactory.init(environment.config)
 
@@ -20,5 +24,9 @@ fun Application.module() {
     configureSerialization()
     configureMonitoring()
     configureSecurity()
-    configureRouting(userService = userService)
+    configureRouting(
+        userService = userService,
+        userDao = userRepository,
+        postService = postService
+    )
 }

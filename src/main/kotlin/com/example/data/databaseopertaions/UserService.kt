@@ -1,13 +1,14 @@
-package com.example.data.services
+package com.example.data.databaseopertaions
 
+import com.example.data.services.HashingService
 import com.example.domain.dao.user.UserDao
 import com.example.domain.models.User
-import java.time.LocalDateTime
+import com.example.domain.response.UserResponse
 
 class UserService(
     private val userRepository: UserDao
 ){
-    suspend fun createUser(user: User): User? {
+    suspend fun createUser(user: User): UserResponse? {
         if (user.username.isBlank() || user.password.isBlank()) {
             return null
         }
@@ -15,20 +16,19 @@ class UserService(
         val newUser = User(
             username = user.username,
             password = hashedPassword,
-            createdAt = System.currentTimeMillis(),
+            createdAt = user.createdAt
         )
         return userRepository.createUser(newUser)
     }
 
-    suspend fun loginUser(username: String, password: String): Boolean {
+    suspend fun loginUser(username: String, password: String): UserResponse? {
         val user = userRepository.findUserbyUsername(username)
-        if (user?.let {
-                if (HashingService.verifyPassword(password, it)) {
-                    true
-                } else {
-                    false
-                }
-            } == true) return true
-        else throw AssertionError("Wrong Password")
+        return if(user != null) {
+            if (HashingService.verifyPassword(password, user)) {
+                user
+            } else {
+                null
+            }
+        } else null
     }
 }

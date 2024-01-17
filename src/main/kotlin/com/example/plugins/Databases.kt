@@ -1,9 +1,6 @@
 package com.example.plugins
 
-import com.example.domain.models.Comments
-import com.example.domain.models.Messages
-import com.example.domain.models.Posts
-import com.example.domain.models.Users
+import com.example.domain.models.*
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.server.config.*
@@ -36,6 +33,7 @@ object DatabaseFactory {
             SchemaUtils.create(Posts)
             SchemaUtils.create(Comments)
             SchemaUtils.create(Messages)
+            SchemaUtils.create(Followers)
         }
     }
 

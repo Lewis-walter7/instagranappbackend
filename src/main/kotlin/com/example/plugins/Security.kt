@@ -9,8 +9,8 @@ import io.ktor.server.auth.jwt.*
 fun Application.configureSecurity() {
     // Please read the jwt property from the config file if you are using EngineMain
     val jwtAudience = "jwt-audience"
-    val jwtDomain = "https://jwt-provider-domain/"
-    val jwtRealm = "ktor sample app"
+    val jwtDomain = "instagramServer"
+    val jwtRealm = "ktorinstagramserver"
     val jwtSecret = System.getenv("JWT_SECRET")
     authentication {
         jwt {
@@ -18,6 +18,7 @@ fun Application.configureSecurity() {
             verifier(
                 JWT
                     .require(Algorithm.HMAC256(jwtSecret))
+                    .withSubject("InstagramAuthentication")
                     .withAudience(jwtAudience)
                     .withIssuer(jwtDomain)
                     .build()

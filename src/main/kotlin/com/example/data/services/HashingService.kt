@@ -1,7 +1,6 @@
 package com.example.data.services
 
-import com.example.domain.models.User
-import org.jetbrains.exposed.sql.Column
+import com.example.domain.response.UserResponse
 import org.mindrot.jbcrypt.BCrypt
 
 object HashingService {
@@ -10,7 +9,7 @@ object HashingService {
         return BCrypt.hashpw(password, salt)
     }
 
-    fun verifyPassword(password: String, user: User): Boolean {
+    fun verifyPassword(password: String, user: UserResponse): Boolean {
         return BCrypt.checkpw(password, user.password)
     }
 }

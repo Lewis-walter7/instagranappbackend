@@ -1,8 +1,10 @@
 package com.example.domain.routes
 
 import com.example.data.services.JWTService
-import com.example.data.services.UserService
+import com.example.data.databaseopertaions.UserService
 import com.example.domain.models.User
+import com.example.domain.requests.UserRequest
+import com.example.domain.response.AuthResponse
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -11,25 +13,49 @@ import io.ktor.server.routing.*
 import java.io.IOException
 
 fun Route.UserRoutes(userService: UserService) {
-    post("/login") {
-        val user = call.receive<User>()
-        val userStatus = userService.loginUser(user.username, user.password)
-        if (userStatus) {
-            val token = JWTService.generateToken(user)
-            call.respond(hashMapOf("token" to token))
+    get("/"){
+        call.respond("Home")
+    }
+    post("login") {
+        val userRequest = call.receive<UserRequest>()
+        val userResponse = userService.loginUser(userRequest.username, userRequest.password)
+        if (userResponse != null) {
+            val token = JWTService.generateToken(userResponse)
+            call.respond(
+                status = HttpStatusCode.OK,
+                message = AuthResponse(
+                    token = token
+                )
+            )
         } else {
-            call.respond("Invalid Credentials")
+            call.respond(
+                status = HttpStatusCode.OK,
+                message = AuthResponse(
+                    message = "Invalid Credentials"
+                )
+            )
         }
     }
 
-    post("/register") {
-        val user = call.receive<User>()
+    post("register") {
+        val userRequest = call.receive<UserRequest>()
         try {
-            userService.createUser(user)
-            call.respond(HttpStatusCode.OK)
+            val user = userRequest.toRegisterUser()
+            val userResponse = userService.createUser(user)
+            call.respond(HttpStatusCode.Created, userResponse!!)
         } catch (e: IOException) {
-            call.respond(HttpStatusCode.Conflict)
+            call.respond(HttpStatusCode.Conflict, "Something went wrong")
             return@post
         }
     }
+
 }
+
+private fun UserRequest.toRegisterUser(): User {
+    return User(
+        username = username,
+        password = password,
+        createdAt = System.currentTimeMillis()
+    )
+}
+
