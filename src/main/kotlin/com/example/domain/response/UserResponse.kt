@@ -12,5 +12,6 @@ data class UserResponse(
     val phoneNumber: String? = null,
     val bio: String? = null,
     val createdAt: Long?,
-    val accountType: String
+    val accountType: String,
+    val name: String? = null
 )

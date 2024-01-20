@@ -3,6 +3,7 @@ package com.example.domain.routes
 import com.example.data.services.JWTService
 import com.example.data.databaseopertaions.UserService
 import com.example.domain.models.User
+import com.example.domain.requests.EditedUserRequest
 import com.example.domain.requests.UserRequest
 import com.example.domain.response.AuthResponse
 import io.ktor.http.*
@@ -49,6 +50,25 @@ fun Route.UserRoutes(userService: UserService) {
         }
     }
 
+    patch("updateuser") {
+        val userRequest = call.receive<EditedUserRequest>()
+        try {
+            if (userRequest.requestedUsername == null) {
+                userService.updateUser(userRequest)
+                call.respond(HttpStatusCode.OK)
+            } else {
+                val token = userService.updateUserWithUsername(userRequest)
+                call.respond(
+                    HttpStatusCode.OK,
+                    message = AuthResponse(
+                    token = token,
+                    message = null
+                ))
+            }
+        } catch (e: Exception) {
+            call.respond(message = hashMapOf("Error" to e.message))
+        }
+    }
 }
 
 private fun UserRequest.toRegisterUser(): User {

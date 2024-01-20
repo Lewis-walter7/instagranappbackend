@@ -8,6 +8,7 @@ import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import java.util.*
 
 fun Route.Authenticate() {
     authenticate {
@@ -27,14 +28,14 @@ fun Route.getUsername(userDao: UserDao){
         get("user") {
             try {
                 val principal = call.authentication.principal<JWTPrincipal>()
-                val username = principal?.getClaim("username", String::class)
+                val id = principal?.getClaim("userid", String::class)
 
-                val user = userDao.findUserbyUsername(username!!)
+                val user = userDao.findUserById(UUID.fromString(id!!))
                 if (user != null) {
                     call.respond(user)
                 }
             } catch (e: Exception) {
-                call.respond(e)
+                call.respond(hashMapOf("Error" to e.message))
             }
         }
     }

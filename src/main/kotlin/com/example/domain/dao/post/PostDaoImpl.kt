@@ -3,16 +3,10 @@ package com.example.domain.dao.user
 import com.example.domain.dao.post.PostDao
 import com.example.domain.models.Post
 import com.example.domain.models.Posts
-import com.example.domain.models.User
-import com.example.domain.models.Users
-import com.example.domain.requests.PostRequest
 import com.example.domain.response.PostResponse
-import com.example.domain.response.UserResponse
 import com.example.plugins.DatabaseFactory.dbQuery
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
 class PostDaoImpl: PostDao {
@@ -44,14 +38,22 @@ class PostDaoImpl: PostDao {
 
 
 
-    override suspend fun getPosts(id: String): List<PostResponse> =  dbQuery {
+    override suspend fun getSearchPosts(): List<PostResponse> =  dbQuery {
         Posts.selectAll()
             .map {
                 resultRowToPost(it)
             }
     }
 
-    override suspend fun getPostsByUser(): List<PostResponse> {
-        TODO("Not yet implemented")
+    override suspend fun getPostsByUser(id: UUID): List<PostResponse> {
+        return transaction {
+            Posts.select {
+                Posts.userId eq id
+            }
+                .orderBy(Posts.createdAt, SortOrder.DESC)
+                .map {
+                resultRowToPost(it)
+            }.toList()
+        }
     }
 }

@@ -14,7 +14,8 @@ data class User(
     val bio: String? = null,
     val followers: List<String> = emptyList(),
     val createdAt: Long,
-    val accountType: String = AccountType.PUBLIC.toString()
+    val accountType: String = AccountType.PUBLIC.toString(),
+    val name: String? = null
 )
 
 object Users: UUIDTable() {
@@ -26,4 +27,5 @@ object Users: UUIDTable() {
     val phoneNumber = varchar("phone_number", 16).nullable()
     val bio = varchar("bio", 512).nullable()
     val createdAt = long("created_at")
+    val name = varchar("name", 40).nullable()
 }

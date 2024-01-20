@@ -21,7 +21,7 @@ object DatabaseFactory {
         val password = config.property("ktor.database.password").getString()
         val defaultDatabase = config.property("ktor.database.database").getString()
         val connectionPool = createHikariDataSource(
-            url = "$jdbcURL/$defaultDatabase?user=$username&password=$password",
+            url = "$jdbcURL/$defaultDatabase?user=$username&password=$password&charSet=UTF-8",
             driver = driverClassName,
             maxPoolSize.toInt(),
             autoCommit.toBoolean()

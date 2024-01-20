@@ -5,6 +5,8 @@ import com.example.domain.models.Post
 import com.example.domain.requests.PostRequest
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -27,6 +29,29 @@ fun Route.PostRoutes(
         } catch (e: IOException) {
             call.respond(
                 message = "Internal server error"
+            )
+        }
+    }
+
+    authenticate {
+        get("getuserposts") {
+            val principal = call.authentication.principal<JWTPrincipal>()
+            val id = principal?.getClaim("userid", String::class)
+
+            val posts = postService.getByPostsById(UUID.fromString(id!!))
+            call.respond(
+                posts
+            )
+        }
+    }
+
+    get("getsearchposts") {
+        val posts = postService.getSearchPosts()
+        if (posts.isEmpty()) {
+            call.respond(hashMapOf("Message" to "No Posts Found"))
+        } else {
+            call.respond(
+                posts
             )
         }
     }

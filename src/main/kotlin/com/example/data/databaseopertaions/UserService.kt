@@ -1,9 +1,14 @@
 package com.example.data.databaseopertaions
 
 import com.example.data.services.HashingService
+import com.example.data.services.JWTService
 import com.example.domain.dao.user.UserDao
 import com.example.domain.models.User
+import com.example.domain.requests.EditedUserRequest
 import com.example.domain.response.UserResponse
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.util.*
 
 class UserService(
     private val userRepository: UserDao
@@ -30,5 +35,23 @@ class UserService(
                 null
             }
         } else null
+    }
+
+    suspend fun updateUser(userRequest: EditedUserRequest) {
+        userRepository.editUser(userRequest)
+    }
+
+    suspend fun updateUserWithUsername(userRequest: EditedUserRequest): String{
+        return withContext(Dispatchers.IO) {
+            userRepository.editUser(userRequest)
+            val user = userRepository.findUserById(UUID.fromString(userRequest.id))
+            JWTService.generateToken(user!!)
+        }
+    }
+
+    suspend fun getUsersByUser(username: String): List<UserResponse>{
+        return withContext(Dispatchers.IO) {
+            userRepository.getUsersByUser(username)
+        }
     }
 }
