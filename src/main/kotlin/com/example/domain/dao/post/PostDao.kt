@@ -8,4 +8,5 @@ interface PostDao {
     suspend fun createPost(post:Post): PostResponse
     suspend fun getSearchPosts(): List<PostResponse>
     suspend fun getPostsByUser(id: UUID): List<PostResponse>
+    fun getPostCount(id: UUID): Long
 }

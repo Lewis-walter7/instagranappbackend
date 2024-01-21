@@ -13,5 +13,8 @@ data class UserResponse(
     val bio: String? = null,
     val createdAt: Long?,
     val accountType: String,
-    val name: String? = null
+    val name: String? = null,
+    val followerCount: Long? = 0,
+    val followingCount: Long? = 0,
+    val postCount: Long? = 0,
 )

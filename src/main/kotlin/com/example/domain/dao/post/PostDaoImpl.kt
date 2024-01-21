@@ -3,6 +3,7 @@ package com.example.domain.dao.user
 import com.example.domain.dao.post.PostDao
 import com.example.domain.models.Post
 import com.example.domain.models.Posts
+import com.example.domain.models.Users
 import com.example.domain.response.PostResponse
 import com.example.plugins.DatabaseFactory.dbQuery
 import org.jetbrains.exposed.sql.*
@@ -45,15 +46,25 @@ class PostDaoImpl: PostDao {
             }
     }
 
-    override suspend fun getPostsByUser(id: UUID): List<PostResponse> {
+    override suspend fun getPostsByUser(id: UUID): List<PostResponse> = dbQuery{
+        val postsCount = getPostCount(id)
+        Users.update({Users.id eq id}) {
+            it[postCount] = postsCount
+        }
+        Posts.select {
+            Posts.userId eq id
+        }
+            .orderBy(Posts.createdAt, SortOrder.DESC)
+            .map {
+                resultRowToPost(it)
+            }.toList()
+    }
+
+    override fun getPostCount(id: UUID): Long {
         return transaction {
             Posts.select {
                 Posts.userId eq id
-            }
-                .orderBy(Posts.createdAt, SortOrder.DESC)
-                .map {
-                resultRowToPost(it)
-            }.toList()
+            }.count()
         }
     }
 }

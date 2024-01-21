@@ -6,6 +6,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import java.util.*
@@ -23,7 +24,7 @@ fun Route.Authenticate() {
     }
 }
 
-fun Route.getUsername(userDao: UserDao){
+fun Route.getUser(userDao: UserDao){
     authenticate {
         get("user") {
             try {
@@ -38,5 +39,13 @@ fun Route.getUsername(userDao: UserDao){
                 call.respond(hashMapOf("Error" to e.message))
             }
         }
+    }
+
+    get("userprofile") {
+        val id = call.parameters["userId"]
+
+        val user = userDao.findUserById(UUID.fromString(id))
+
+        call.respond(user!!)
     }
 }

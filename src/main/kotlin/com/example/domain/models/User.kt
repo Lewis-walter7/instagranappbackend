@@ -15,7 +15,10 @@ data class User(
     val followers: List<String> = emptyList(),
     val createdAt: Long,
     val accountType: String = AccountType.PUBLIC.toString(),
-    val name: String? = null
+    val name: String? = null,
+    val followerCount: Long? = 0,
+    val followingCount: Long?= 0,
+    val postCount: Long? = 0,
 )
 
 object Users: UUIDTable() {
@@ -28,4 +31,7 @@ object Users: UUIDTable() {
     val bio = varchar("bio", 512).nullable()
     val createdAt = long("created_at")
     val name = varchar("name", 40).nullable()
+    val followerCount = long("follower_count").default(0)
+    val followingCount = long("following_count").default(0)
+    val postCount = long("post_count").default(0)
 }

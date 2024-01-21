@@ -5,6 +5,7 @@ import com.example.data.services.JWTService
 import com.example.domain.dao.user.UserDao
 import com.example.domain.models.User
 import com.example.domain.requests.EditedUserRequest
+import com.example.domain.requests.FollowRequests
 import com.example.domain.response.UserResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -21,7 +22,10 @@ class UserService(
         val newUser = User(
             username = user.username,
             password = hashedPassword,
-            createdAt = user.createdAt
+            createdAt = user.createdAt,
+            followerCount = 0,
+            followingCount = 0,
+            postCount = 0
         )
         return userRepository.createUser(newUser)
     }
@@ -53,5 +57,19 @@ class UserService(
         return withContext(Dispatchers.IO) {
             userRepository.getUsersByUser(username)
         }
+    }
+
+    suspend fun followUser(followRequests: FollowRequests): Unit {
+        return withContext(Dispatchers.IO) {
+            userRepository.followUser(followRequests)
+        }
+    }
+
+    suspend fun getFollowerCount(id: UUID): Long{
+        return userRepository.getFollowerCount(id)
+    }
+
+    suspend fun isFollowing(followRequests: FollowRequests): Boolean{
+        return userRepository.isFollowing(followRequests)
     }
 }

@@ -15,7 +15,7 @@ fun Application.configureRouting(
     routing {
         UserRoutes(userService)
         Authenticate()
-        getUsername(userDao)
+        getUser(userDao)
         PostRoutes(postService)
         SearchRoutes(userService)
     }

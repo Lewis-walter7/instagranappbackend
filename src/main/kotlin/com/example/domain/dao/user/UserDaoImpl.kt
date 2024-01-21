@@ -1,11 +1,16 @@
 package com.example.domain.dao.user
 
+import com.example.domain.models.Followers
 import com.example.domain.models.User
 import com.example.domain.models.Users
 import com.example.domain.requests.EditedUserRequest
+import com.example.domain.requests.FollowRequests
 import com.example.domain.response.UserResponse
 import com.example.plugins.DatabaseFactory.dbQuery
+import kotlinx.coroutines.delay
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
 class UserDaoImpl: UserDao {
@@ -20,7 +25,10 @@ class UserDaoImpl: UserDao {
         bio = row[Users.bio],
         accountType = row[Users.accountType],
         createdAt = row[Users.createdAt],
-        name = row[Users.name]
+        name = row[Users.name],
+        followerCount = row[Users.followerCount],
+        followingCount = row[Users.followingCount],
+        postCount = row[Users.postCount]
     )
 
     override suspend fun createUser(user: User): UserResponse = dbQuery {
@@ -92,4 +100,51 @@ class UserDaoImpl: UserDao {
                 resultRowToUser(it)
             }
     }
+
+    override fun getFollowingCount(id: UUID): Long {
+        return transaction {
+            val followingCount = Followers.select {
+                Followers.followerId eq id
+            }.count()
+            followingCount
+        }
+    }
+    override fun getFollowerCount(id: UUID): Long  {
+        return transaction {
+            val followers = Followers.select {
+                Followers.followingId eq id
+            }.count()
+            println(followers)
+            followers
+        }
+    }
+    override suspend fun followUser(followRequests: FollowRequests): Unit = dbQuery {
+        if(!isFollowing(followRequests)) {
+            Followers.insert {
+                it[followerId] = followRequests.followerId
+                it[followingId] = followRequests.followingId
+            }
+        } else {
+            Followers.deleteWhere {
+                (followingId eq followRequests.followingId) and (followerId eq followRequests.followerId)
+            }
+        }
+        val followersCount = getFollowerCount(followRequests.followingId)
+        val followCount = getFollowingCount(followRequests.followerId)
+        Users.update({Users.id eq followRequests.followingId}) {
+            it[followerCount] = followersCount
+        }
+        Users.update({Users.id eq followRequests.followerId}) {
+            it[followingCount] = followCount
+        }
+    }
+
+    override suspend fun isFollowing(followRequests: FollowRequests): Boolean {
+        val record = Followers.select {
+            (Followers.followingId eq followRequests.followingId) and (Followers.followerId eq followRequests.followerId)
+        }.count()
+
+        return record >0
+    }
+
 }

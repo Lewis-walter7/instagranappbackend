@@ -4,6 +4,7 @@ import com.example.data.services.JWTService
 import com.example.data.databaseopertaions.UserService
 import com.example.domain.models.User
 import com.example.domain.requests.EditedUserRequest
+import com.example.domain.requests.FollowRequests
 import com.example.domain.requests.UserRequest
 import com.example.domain.response.AuthResponse
 import io.ktor.http.*
@@ -12,6 +13,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import java.io.IOException
+import java.util.*
 
 fun Route.UserRoutes(userService: UserService) {
     get("/"){
@@ -69,13 +71,28 @@ fun Route.UserRoutes(userService: UserService) {
             call.respond(message = hashMapOf("Error" to e.message))
         }
     }
+
+    post("userfollowers") {
+        val request = call.receive<FollowRequests>()
+
+        userService.followUser(request)
+        call.respond(HttpStatusCode.OK)
+    }
+
+    get("followers") {
+        val id = call.parameters["id"]
+
+        val followers = userService.getFollowerCount(UUID.fromString(id))
+
+        call.respond(hashMapOf("Following Count" to followers))
+    }
 }
 
 private fun UserRequest.toRegisterUser(): User {
     return User(
         username = username,
         password = password,
-        createdAt = System.currentTimeMillis()
+        createdAt = System.currentTimeMillis(),
     )
 }
 
