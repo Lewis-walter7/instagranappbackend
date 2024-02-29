@@ -24,7 +24,7 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST }} 
           username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          key: ${{ secrets.EC2_SECRET_SSH }}
           source: "build/libs/*.jar"
           target: "/home/ec2-user/" # Adjust the target path on EC2
 
@@ -33,7 +33,7 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          key: ${{ secrets.EC2_SECRET_SSH }}
           script: |
             java -jar /home/ec2-user/myapp.jar &  
 
